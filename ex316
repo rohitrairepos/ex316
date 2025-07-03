@@ -1,0 +1,578 @@
+oc login -u admin -p redhatocp https://api.ocp4.example.com:6443
+
+
+https://console-openshift-console.apps.ocp4.example.com
+
+oc login -u developer -p developer https://api.ocp4.example.com:6443
+
+
+admin , redhatocp 
+_____________________________________________________________________________________
+
+q1: Deploy OpenShift Virtualization
+Deploy OpenShift Virtualization in the openshift-cnv project. Install and configure an operand with the name kubevirt-hyperconverged in
+
+---
+ans : go to openshift web console gui 
+left hand side Operators > OperatorHub > openshift virtualization > install > ( same ns openshift-cnv) update approval automatic
+
+now on the same page after installation u will see create hyperconverged , click on that 
+
+go to the bottom and click on create 
+
+after some time u will get 'web console update is available'
+
+verify 
+[student@workstation ~]$ oc get project | grep openshift-cnv
+openshift-cnv                                                        Active
+
+student@workstation ~]$ oc get po -n openshift-cnv
+NAME                                                   READY   STATUS    RESTARTS        AGE
+bridge-marker-8m28t                                    1/1     Running   0               3m29s
+bridge-marker-9zdpq                                    1/1     Running   0               3m29s
+bridge-marker-nmbws                                    1/1     Running   0               3m29s
+bridge-marker-t8k2w                                    1/1     Running   0               3m29s
+bridge-marker-tll4b                                    1/1     Running   0               3m29s
+cdi-apiserver-765fb5944f-hfjlm                         1/1     Running   0               3m24s
+cdi-deployment-6944cc8d64-jhlc9                        1/1     Running   0               3m23s
+cdi-operator-86b94b7687-zmhrn                          1/1     Running   0               5m9s
+cdi-uploadproxy-7554c49d87-xhjz2                       1/1     Running   0               3m23s
+cluster-network-addons-operator-6fc5fb866f-x5krq       2/2     Running   0               5m32s
+hco-operator-9769d7fb5-wwmg4                           1/1     Running   0               5m32s
+hco-webhook-667b8c47d4-7pvmh                           1/1     Running   0               5m32s
+hostpath-provisioner-operator-6ffbdb8b56-6nhgf         1/1     Running   0               5m9s
+hyperconverged-cluster-cli-download-599bb44667-x7mx7   1/1     Running   0               5m32s
+kube-cni-linux-bridge-plugin-76lml                     1/1     Running   0               3m30s
+kube-cni-linux-bridge-plugin-tg5jf                     1/1     Running   0               3m30s
+kube-cni-linux-bridge-plugin-v4csx                     1/1     Running   0               3m30s
+kube-cni-linux-bridge-plugin-wlkmv                     1/1     Running   0               3m30s
+kube-cni-linux-bridge-plugin-zf5rx                     1/1     Running   0               3m30s
+kubemacpool-cert-manager-7f55cb8559-fdhhs              1/1     Running   0               3m29s
+kubemacpool-mac-controller-manager-7fff758dcc-k745p    2/2     Running   0               3m29s
+kubevirt-apiserver-proxy-cc9448bf8-z48nz               1/1     Running   0               2m41s
+kubevirt-console-plugin-77d7d57768-thdcg               1/1     Running   0               2m41s
+mtq-operator-b99686665-hlnbx                           1/1     Running   0               5m8s
+ssp-operator-9fb756dfc-g7hfd                           1/1     Running   1 (3m13s ago)   5m30s
+virt-api-65466f7d54-knqmj                              1/1     Running   0               3m5s
+virt-api-65466f7d54-lzxbk                              1/1     Running   0               3m5s
+virt-controller-688ccc87b5-8ktzx                       1/1     Running   0               2m39s
+virt-controller-688ccc87b5-ccr4w                       1/1     Running   0               2m39s
+virt-exportproxy-55f65dcbcf-8vck5                      1/1     Running   0               2m39s
+virt-exportproxy-55f65dcbcf-h7thd                      1/1     Running   0               2m39s
+virt-handler-7lqn4                                     1/1     Running   0               2m39s
+virt-handler-h8r2d                                     1/1     Running   0               2m39s
+virt-handler-j9xbp                                     1/1     Running   0               2m39s
+virt-handler-vtbc7                                     1/1     Running   0               2m39s
+virt-handler-wxzs9                                     1/1     Running   0               2m39s
+virt-operator-77886dd7c8-l629t                         1/1     Running   0               5m10s
+virt-operator-77886dd7c8-plzqb                         1/1     Running   0               5m10s
+virt-template-validator-7589f476d4-tmsvl               1/1     Running   0               2m42s
+virt-template-validator-7589f476d4-vw4hf               1/1     Running   0               2m42s
+[student@workstation ~]$ 
+
+_____________________________________________________________________________________
+Q2
+Resume a node from maintenance mode
+Resume the node That is currently in maintenance mode so that the following
+conditions are true:
+The node is able to schedule pods
+The node shows no status other than Ready
+
+----
+ A worker node is cordon in the exam , so we have to just uncordon node 
+
+ [student@workstation ~]$ oc get node 
+NAME       STATUS                     ROLES                         AGE    VERSION
+master01   Ready                      control-plane,master,worker   338d   v1.27.10+28ed2d7
+master02   Ready                      control-plane,master,worker   338d   v1.27.10+28ed2d7
+master03   Ready                      control-plane,master,worker   338d   v1.27.10+28ed2d7
+worker01   Ready,SchedulingDisabled   worker                        328d   v1.27.10+28ed2d7
+worker02   Ready                      worker                        328d   v1.27.10+28ed2d7
+
+student@workstation ~]$ oc adm uncordon worker01
+node/worker01 uncordoned
+_____________________________________________________________________________________
+q3
+User verence-ii has the necessary roles needed to create and manage virtual machines
+User verence-11 creates a Red Hat Enterprise Linux 9.2 virtual machine named lanerce in the ramtops project
+The flavor for the virtual machine is small
+The image used to create the persistent volume claim for the virtual machine boot source is 
+http://materials.domain13.example.com/images/rhel-9.2-x86 64-kvm.qcow2
+The storage Classame is ocs-external-storagecluster-ceph-rbd
+The persistent volume claim size is 30Gi
+The workload type of the virtual machine is server
+The network interface name is default
+The user verence-ii with password Roonkere13 exists in the cloud-init definition
+The ssh key /home/opsadm/.ssh/id_rsa_ex316.pub from user opsadm at workbench.domain13.example.co has been added as an 
+authorized SSH key via the cloud-init definition
+The user moist can view and access the virtual machine performance metrics
+The user moist is allowed to start, stop, pause or restart the virtual machine
+NOTE: The password for user verence-ii for user moist is Roonkere
+
+Ans
+----
+ wget http://utility.lab.example.com:8080/openshift4/images/rhel9-mariadb.qcow
+
+ in the practice we will deploy VM using admin user but in exam we will use verence-ii 
+
+ we will create a project ramtops (in examp it should be already created) : Home > project > create project (ramtops)
+ oc new-project ramtops (lab)
+
+ now go to virtualization tab > virtualMachine > from template > rhel9.2 template is already availale in the exam 
+ here we have rhel9 > choose template and modify setting > customize setting >
+ name: lanerce
+
+disk source : is url (http://utility.lab.example.com:8080/openshift4/images/rhel9-mariadb.qcow2 lab )
+disk space : 30 GB 
+
+storage class : 
+
+customize virtual machine parameter 
+ flavor: small 
+
+ check storage classname : I think in lab we need to create sc ocs-external-storagecluster-ceph-rbd
+
+ now go to script edit cloud init add user name : verence-ii Roonkere13
+
+ also add public key ( in exam key is available at work bench , you need to copy from there and paste here )
+ in lab ssh-keygen and use it 
+
+ our vm should come up properly 
+
+ oc project ramtops 
+ oc get vmi 
+ oc console 
+
+ now we have to give access to user moist 
+
+ openshift have different edit role , virtual machine have different edit role 
+
+ oc get clusterrole | grep kubevirt.io:edit 
+
+create moist user with Roonkere password 
+ oc adm policy add-role-to-user kubevirt.io:edit moist -n ramtops 
+
+_____________________________________________________________________________________
+
+q4
+
+Configure a web server in a virtual Machine
+Configure a web server in the lancre virtual machine so that the following conditions are true:
+The httpd package that provides the web server is installed in the virtual machine 
+The httpd service is enabled and started automatically during the boot process of the virtual machine 
+The file http://materials.domain.13.example.com/files/service.html exists in the path/var/www/html of the virtual machine
+The web server serves the file service.html to pods in the ramtops project A network policy named allow-webserver exists in the ramtops project
+A ClusterIP Service allows web traffic into the Lancre virtual machine
+The network policy restricts access to the virtual machine lancre allowing only the members of project ramtops to access TCP port 80
+Other projects cannot reach the virtual machine Lancre at TCP port 80
+
+
+Ans
+you can do using gui also 
+but loging using cli 
+
+oc get vm 
+v
+
+virtctl console lenerce 
+sudo -i 
+
+in exam you need to configure yum 
+cd /yum/repos.d
+
+in exam if you scroll down you will get yum repo in 
+wget http://classroom.example.com/server.repo
+
+then you can do :yum install httpd -y 
+
+systemctl start httpd 
+systemctl enable httpd 
+
+cd /var/www/html
+wget http://classroom.example.com/service.html
+
+
+in lab create
+echo "hello world" > index.html  
+echo "ex316" > service.html
+
+exit 
+
+now you have to configure network policy 
+
+before that we need to expose service ip 
+in exam you will get service Ip already configured 
+
+oc get pod 
+
+oc expose pod <pod-name> --port=80 --name=lenerce 
+
+oc get service 
+
+
+[student@workstation ~]$ oc get service
+
+
+NAME       TYPE      CLUSTER-IP     EXTERNAL-IP  PORT (S)AGE
+lenerge   ClusterIP  172.30.77.226   ‹none >    80/TCP 4s
+
+now try to login into the machine 
+
+virtctl console lenernce 
+
+curl 172.30.77.226
+
+you should see hello world 
+
+and
+curl 172.30.77.226/service.html 
+exam316
+
+
+first know lable of your VM 
+
+oc get po --show-labels 
+if not given then 
+
+shut down you vm 
+virtctl stop lenence 
+
+you can use gui or cli  
+gui > virtual machine : open three dots and edit lables
+vm=lernece  
+
+
+you can do netpol creation graphically 
+
+networking > network policy > create new network policy 
+
+policy name : allow-webserver 
+pod selector : app = lenence
+
+we have to allow ingress 
+
+add ingress > ingress rule > allow pods from same namespace 
+
+ports: TCP 80 
+
+now to verify 
+
+oc get netpol -o yaml > net.yaml 
+
+now create any pod 
+
+oc describe is httpd -n openshift | less 
+
+oc new project demo
+oc create deploy test --image=http://registry.ocp4.example.com:8443/rhsc1/httpd-24-rhel
+
+oc rsh test-abcd 
+
+curl 172.30.77.226
+no output 
+
+now go into the ramtops
+
+oc project ramtops 
+
+oc create deploy test-1 --image=http://registry.ocp4.example.com:8443/rhsc1/httpd-24-rhel
+oc rsh test-abcd 
+
+curl 172.30.77.226
+should work 
+
+help : if you see any problem with label 
+kubectl edit vm lenerce 
+
+template:
+    labels:
+        app: lenerence 
+
+you should see label in 
+
+oc get pod --show-labels 
+
+virt-launcher-lerence-bqdn   app=lerence 
+
+also check service ip is getting same label 
+
+
+
+_____________________________________________________________________________________
+q5
+
+User ram has the necessary roles needed to create and manage virtual machines
+User ram creates top Red Hat Enterprise Linux 9.2 virtual machine named lipwig in the uberwald
+The flavor for the virtual machine is small
+The image used to create the persistent volume claim for 
+the virtual machine boot sourc is http://classroom.example.com/images/rhel-9.2-x86 64-kvm.qcow2
+The storageClassName is ocs-external-storagecluster-ceph-rbd
+The persistent volume claim size is 30Gi
+The workload type of the virtual machine is server
+The first network interface name is default
+The first network interface is attached to the Pod Networking (default) network
+The first network interface type is masquerade
+The second network interface name is nic-o
+The second network interface is attached to the ex316 network
+The second network interface type is bridge
+The IP address of the second network interface is provided by OpenShift The model for both network interfaces is virtio
+The user ram with password redhat in the cloud-init definition
+
+
+ans :
+do this graphically 
+
+go to operator hub > kubernetes NMState operator  > install 
+
+then view operator : create instance > create , 
+now on every node there will a nmstate operator running which will manage networking of machine 
+
+you will see update available option 
+
+now we have to create a bridge of nic0 and we have to attache that into our vm as second interface card 
+
+after that you will see dome new options , go to netwokring > NodeNetworkConfigurationPolicy 
+
+before that you can see Nodenetwork state , of each node , and see if you have interface available on worker nodes 
+in exam its name will be enc01 something 
+
+so we need to give a lable to nodes which have this interface avilable 
+
+go to compute> nodes > lable > external-network=true ( worker-1 and worker-2)
+
+now search using lable and check lable is working or not 
+
+now NodeNetworkConfigurationPolicy
+
+policy name : 316
+label : external-network=true
+ipv4 : dhcp 
+port : ens4 ( in lab) .. in exam nic-0 is given 
+then create 
+
+now create NetowrkAttachmentDefinition
+first create project uberwald
+create NetowrkAttachmentDefinition > name ex316 > bridge name br0 then create 
+
+now create virtual machine 
+
+create VM rhel9.2 > customize > url 
+name : whatever givem 
+add user name and public in in cloud init 
+
+now main is network interface which is new 
+
+add Network interface > add network interface 
+name: nic-0
+model: virtio
+network: uberwald/ex316 
+type : bridge 
+save 
+now click create virtual machine 
+
+it is called multihome network 
+
+
+now check 
+
+oc project uberwald 
+
+oc get vmi 
+
+virtctl console lipwing 
+usrname:
+password:
+ip a 
+
+you should see two interface 
+
+_____________________________________________________________________________________
+q6
+
+Manage storage for virtual machines
+Create two virtual machines in the project lonely in the following way:
+Create a virtual machine named dwalin using the dwalin-template template
+Create a virtual machine named fili using the fili-template template
+Do not change the templates I
+After the virtual machines are created, perform any necessary actions on these virtual machine so that the following conditions are met:
+Move the disk gloin from the virtual machine dwalin to the virtual machine fili
+The disk uses the same settings as the original gloin on dwalin, such as storage class, access mode, etc
+The disk is a block device and is accessible via /dev/vdc
+The disk is mounted at /var/www/html on fili permanently
+Ensure the virtual machine dwalin has a disk named dori
+The disk uses http://classroom.example.com/images/rhel9.qcow2 as a source
+The disk uses the ocs-external-storagecluster-ceph-rbd storage class
+The disk size is 1Gi
+The disk supports shared access
+The disk is a block device and is accessible vin/dev/vdc
+The disk is mounted at /var/www/html on dwalin permanently
+Ensure the existing data on these disks is preserved
+Both virtual machine are running normally
+
+_____________________________________________________________________________________
+q7
+Create a virtual machine template
+Create a project and a virtual machine template according to the following requirements:
+The project is called cinema
+he template name is dioscuri and it exists in the cinema project The template is a clone of the built-in rhe19-server-small template
+Virtual Machines created using this template use the flavor Small, with 1 CPU, 2 Gi of RAM and 15 Gi of storage space, and the image rhel-9.2-x86_64-kvm.qcow2 for source provided at
+http://utility.lab.example.com:8080/openshift4/images/rhel9-mariadb.gcow2
+It is possible to access these Virtual Machines on the console, using the user developer and the password developer It is possible to access these Virtual Machines via SSH using the user ferni and the/home/opsadm /.ssh/id_rsa.pub key on workstration.example.com without a password
+_____________________________________________________________________________________
+
+
+q8
+Create a virtual machine snapshot
+Create a volume snapshot of the VM pollux in the project advanced-snapshot
+named pollux-snap
+NOTE: The VM must be accessible through SSH and in a full working state before taking the snapsilot.
+
+_____________________________________________________________________________________
+q9
+
+Create a service using virtual machine load balancing
+In the project named cinema create the following objects:
+Using the template dioscuri which you created previously, instantiate two identical virtual machines named alpha and beta
+Create a service named flix-service:
+Type: NodePort TCP port 23 of each VM is connected to any worker node port 38023
+Create a route named flix-route
+is made available at address flix.domain13.example.com
+Running the following command line on workstation.example.com:
+telnet flix.vt100cinema.rr.domain13.examole.com 30023
+
+
+_____________________________________________________________________________________
+q10
+
+The mariadb-server package that provides the database server is installed in the virtual machine
+
+The mariadb service is enabled and started automatically during the boot process of the virtual machine
+
+The database server uses the default configuration at TCP port 3306
+
+The liveness probe tests the database server at TCP port 3306
+
+The time, in seconds, after the virtual machine instance starts before the liveness probe is initiated is 120
+
+The delay, in seconds, between performing probes is 5
+
+
+
+_____________________________________________________________________________________
+q11
+Question-11:
+Configure virtual machine migration
+Configure node placement for virtual machine migration so that the following conditions are true:
+The virtual machine lipwigin the project uberwald is able to migrate between the nodes with the label
+uempire:twobats
+The virtual machine lipwig in the project uberwald is not able to migrate to any other nodes
+
+
+_____________________________________________________________________________________
+q12
+Prepare a virtual machine for cloning
+Clone the root disk of the VM named castor in the project vt100cinema as castor-copy by using Data Volumes
+
+_____________________________________________________________________________________
+q13
+The virtual machine name is suviva-vm 1
+The virtual machine runs in the project suviva
+
+
+The virtual machine is deployed using the suviva-template template
+
+The virtua' machine is automatically scheduled on either master1.domain13.example.com or
+master2. too ain13.example.com
+
+
+In the event of a failure of either node, the virtual machine is automatically started on the other node
+
+_____________________________________________________________________________________
+q14
+
+
+
+_____________________________________________________________________________________
+
+
+_____________________________________________________________________________________
+
+
+_____________________________________________________________________________________
+
+
+
+_____________________________________________________________________________________
+
+
+
+_____________________________________________________________________________________
+
+
+
+_____________________________________________________________________________________
+
+
+
+_____________________________________________________________________________________
+
+
+_____________________________________________________________________________________
+
+
+_____________________________________________________________________________________
+
+
+
+_____________________________________________________________________________________
+
+
+
+_____________________________________________________________________________________
+
+
+
+_____________________________________________________________________________________
+
+
+
+_____________________________________________________________________________________
+
+
+_____________________________________________________________________________________
+
+
+_____________________________________________________________________________________
+
+
+
+_____________________________________________________________________________________
+
+
+
+_____________________________________________________________________________________
+
+
+
+_____________________________________________________________________________________
+
+
+_____________________________________________________________________________________
+
+
+_____________________________________________________________________________________
+
+
+_____________________________________________________________________________________
+
+
+
+_____________________________________________________________________________________
+
+
+
+_____________________________________________________________________________________
+
+
+
+_____________________________________________________________________________________
